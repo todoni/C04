@@ -6,27 +6,53 @@
 /*   By: sohan <sohan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/05 20:46:44 by sohan             #+#    #+#             */
-/*   Updated: 2021/04/05 22:11:38 by sohan            ###   ########.fr       */
+/*   Updated: 2021/04/06 02:40:19 by sohan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-
-int	is_exception(char *base)
+int	is_valid_case(char *base)
 {
 	int n;
-	
+
 	n = 0;
 	while (*base != 0)
 	{
-		if (*base - *(base + 1) == 0 || *base == '+' || *base == '-')
+		if (*base == '+' || *base == '-' || *base == ' ' || \
+				*base == '\t' || *base == '\n' || *base == '\v' || \
+										*base == '\f' || *base == '\r')
 			return (0);
 		base++;
 		n++;
 	}
-	if (n == 1)
-		return (0);
 	return (n);
+}
+
+int	is_overlap(char *base)
+{
+	int count_char[256];
+	int i;
+
+	i = 0;
+	while (i < 256)
+	{
+		count_char[i] = 0;
+		i++;
+	}
+	i = 0;
+	while (*base != '\0')
+	{
+		while (i < 256)
+		{
+			if (*base == i)
+				count_char[i] += 1;
+			if (count_char[i] > 1)
+				return (0);
+			i++;
+		}
+		base++;
+		i = 0;
+	}
+	return (1);
 }
 
 int	find_base_index(char *base, char str)
@@ -39,6 +65,9 @@ int	find_base_index(char *base, char str)
 		base++;
 		index++;
 	}
+	base -= index;
+	if (index == is_valid_case(base))
+		return (0);
 	return (index);
 }
 
@@ -50,7 +79,7 @@ int	calculate_result(char *str, char *base, int n_power_of_base)
 
 	index = 0;
 	result = 0;
-	n = is_exception(base);
+	n = is_valid_case(base);
 	while (*str != '-' && *str != '+')
 	{
 		index = find_base_index(base, *str);
@@ -61,31 +90,31 @@ int	calculate_result(char *str, char *base, int n_power_of_base)
 	return (result);
 }
 
-int		ft_atoi_base(char *str, char *base)
+int	ft_atoi_base(char *str, char *base)
 {
-	int		result;
-	int		n_power_of_base;
-	
+	int	result;
+	int	n_power_of_base;
+
 	n_power_of_base = 1;
 	result = 0;
-	if (is_exception(base) == 0)
+	if (is_valid_case(base) == 0 || is_valid_case(base) == 1 || \
+										is_overlap(base) == 0)
 		return (0);
-	while (*str != '\0' && (*str < '!' || *str == '-' || *str == '+'))
+	while (*str != '\0' && *str < '!')
+		str++;
+	while (*str != '\0' && (*str == '+' || *str == '-'))
 	{
 		if (*str == '-')
 			n_power_of_base *= -1;
 		str++;
 	}
 	while (*str != '\0')
+	{
+		if (is_valid_case(str) == 0)
+			return (0);
 		str++;
+	}
 	str--;
 	result = calculate_result(str, base, n_power_of_base);
 	return (result);
-}
-
-int	main()
-{
-	printf("%d\n", ft_atoi_base("   ---+--+--2147483648","0123456789"));
-	
-	return 0;
 }

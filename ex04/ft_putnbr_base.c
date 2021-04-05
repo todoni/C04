@@ -6,25 +6,53 @@
 /*   By: sohan <sohan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/04 23:41:36 by sohan             #+#    #+#             */
-/*   Updated: 2021/04/05 20:44:07 by sohan            ###   ########.fr       */
+/*   Updated: 2021/04/06 02:45:11 by sohan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include <stdio.h>
 
-int	is_exception(char *base)
+int		get_base_len(char *base)
 {
-	int exception;
+	int i;
 
-	exception = 1;
-	while (*base != 0)
+	i = 0;
+	while (*base != '\0')
 	{
-		if (*base - *(base + 1) == 0 || *base == '+' || *base == '-')
+		if (*base == '+' || *base == '-')
 			return (0);
 		base++;
+		i++;
 	}
-	return (exception);
+	return (i);
+}
+
+int		is_overlap(char *base)
+{
+	int count_char[256];
+	int i;
+
+	i = 0;
+	while (i < 256)
+	{
+		count_char[i] = 0;
+		i++;
+	}
+	i = 0;
+	while (*base != '\0')
+	{
+		while (i < 256)
+		{
+			if (*base == i)
+				count_char[i] += 1;
+			if (count_char[i] > 1)
+				return (0);
+			i++;
+		}
+		base++;
+		i = 0;
+	}
+	return (1);
 }
 
 void	display_nbr_by_base(char *base, int nbr, int n)
@@ -41,31 +69,18 @@ void	display_nbr_by_base(char *base, int nbr, int n)
 void	ft_putnbr_base(int nbr, char *base)
 {
 	int n;
-	
-	n = 0;
-	while (*base != '\0')
+
+	n = get_base_len(base);
+	if (n == 0 || n == 1 || is_overlap(base) == 0)
 	{
-		base++;
-		n++;
-	}
-	base-= n;
-	if (n == 1 || is_exception(base) == 0)
-	{	
 		return ;
 	}
 	else if (nbr == 0)
-	{	
+	{
 		write(1, &base[nbr % n], 1);
-		return;
+		return ;
 	}
-	if (nbr < 0 && is_exception(base) != 0)
+	if (nbr < 0)
 		write(1, "-", 1);
-	if (is_exception(base) != 0)
-		display_nbr_by_base(base, nbr, n);
-}
-
-int	main()
-{
-	ft_putnbr_base(-2147483648, "000");
-	return 0;
+	display_nbr_by_base(base, nbr, n);
 }
