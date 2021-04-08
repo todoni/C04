@@ -6,7 +6,7 @@
 /*   By: sohan <sohan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/05 20:46:44 by sohan             #+#    #+#             */
-/*   Updated: 2021/04/06 02:40:19 by sohan            ###   ########.fr       */
+/*   Updated: 2021/04/08 04:05:16 by sohan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,10 +108,8 @@ int	ft_atoi_base(char *str, char *base)
 			n_power_of_base *= -1;
 		str++;
 	}
-	while (*str != '\0')
+	while (*str != '\0' && find_base_index(base, *str) != 0)
 	{
-		if (is_valid_case(str) == 0)
-			return (0);
 		str++;
 	}
 	str--;
